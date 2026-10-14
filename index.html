@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Life Quest - Ερωτηματολόγιο Ικανοποίησης</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+        .font-body { font-family: 'Comfortaa', cursive; }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .emoji-btn {
+            transition: all 0.2s ease;
+        }
+        .emoji-btn:hover {
+            transform: scale(1.12) translateY(-4px);
+        }
+        .emoji-btn.selected {
+            transform: scale(1.18) translateY(-6px);
+            border-color: #ec4899;
+            background-color: rgba(236, 72, 153, 0.25);
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+        }
+        .pulse-btn {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="p-2 md:p-6 flex flex-col justify-between min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="max-w-5xl mx-auto w-full flex flex-wrap justify-between items-center bg-slate-900/90 p-4 rounded-2xl border border-slate-700/50 mb-6 shadow-xl gap-3">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-tr from-pink-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-xl shadow-lg">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-pink-400 via-purple-300 to-indigo-400 bg-clip-text text-transparent">SchoolQuest</h1>
+                <p class="text-xs text-slate-400 font-body">Έρευνα Ικανοποίησης Μαθητών</p>
+            </div>
+        </div>
+
+        <button onclick="toggleAdminPanel()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-xl text-sm border border-indigo-500/30 transition flex items-center gap-2">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Αποτελέσματα & Στατιστικά</span>
+        </button>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl mx-auto w-full flex-1 flex flex-col justify-center items-center">
+
+        <!-- ΜΗΝΥΜΑ ΑΝ ΕΧΕΙ ΞΑΝΑΠΑΙΞΕΙ ΑΠΟ ΤΗ ΣΥΣΚΕΥΗ -->
+        <div id="screen-already-played" class="glass-card p-8 md:p-12 rounded-3xl w-full text-center hidden shadow-2xl">
+            <div class="text-7xl mb-4">🔒📱</div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-3 text-white">Έχεις ήδη ψηφίσει!</h2>
+            <p class="text-slate-300 font-body max-w-md mx-auto mb-6">
+                Αυτή η συσκευή έχει ήδη καταχωρήσει την απάντησή της στην έρευνα. Κάθε μαθητής μπορεί να συμμετάσχει μία φορά από τη συσκευή του.
+            </p>
+            <div class="bg-indigo-950/60 p-5 rounded-2xl max-w-md mx-auto border border-indigo-800 mb-6">
+                <p class="text-indigo-200 text-sm font-body">
+                    Ευχαριστούμε πολύ για τη συμβολή σου στη βελτίωση του σχολείου μας! ✨
+                </p>
+            </div>
+            <button onclick="toggleAdminPanel()" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-xl font-bold transition">
+                <i class="fa-solid fa-chart-pie mr-2"></i> Προβολή Συνολικών Στατιστικών Σχολείου
+            </button>
+        </div>
+
+        <!-- ΟΘΟΝΗ 1: ΚΑΛΩΣΟΡΙΣΜΑ & ΔΗΛΩΣΗ ΣΤΟΙΧΕΙΩΝ -->
+        <div id="screen-welcome" class="glass-card p-6 md:p-10 rounded-3xl w-full text-center shadow-2xl">
+            <div class="text-6xl mb-4">🏫✨</div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Πόσο σου αρέσει το Σχολείο σου;</h2>
+            
+            <div class="bg-slate-800/80 p-5 rounded-2xl mb-8 text-left max-w-2xl mx-auto border border-slate-700">
+                <h3 class="text-indigo-400 font-bold mb-3 flex items-center gap-2 text-lg">
+                    <i class="fa-solid fa-circle-info"></i> Οδηγίες για το Παιχνίδι-Έρευνα:
+                </h3>
+                <ul class="space-y-2 text-slate-300 text-sm md:text-base font-body">
+                    <li class="flex items-start gap-2">
+                        <span class="text-pink-400 font-bold">1.</span>
+                        <span>Δήλωσε την <strong>Τάξη</strong>, το <strong>Τμήμα</strong> (Α1-Α6, Β1-Β7, Γ1-Γ7) και το <strong>Φύλο</strong> σου.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-pink-400 font-bold">2.</span>
+                        <span>Βαθμολόγησε με <strong>1 έως 5 Emojis</strong> πόσο ικανοποιημένος/η είσαι από κάθε πτυχή του σχολείου.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-pink-400 font-bold">3.</span>
+                        <span>Η συμμετοχή είναι <strong>ανώνυμη</strong> και επιτρέπεται <strong>μόλις μία φορά</strong> ανά συσκευή!</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Profile Form -->
+            <div class="max-w-xl mx-auto space-y-5 text-left mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-2">Τάξη</label>
+                        <select id="user-grade" class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500 font-body">
+                            <option value="Α">Α' Γυμνασίου</option>
+                            <option value="Β">Β' Γυμνασίου</option>
+                            <option value="Γ">Γ' Γυμνασίου</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-2">Τμήμα</label>
+                        <select id="user-classroom" class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500 font-body">
+                            <optgroup label="Α' Γυμνασίου">
+                                <option value="Α1">Τμήμα Α1</option>
+                                <option value="Α2">Τμήμα Α2</option>
+                                <option value="Α3">Τμήμα Α3</option>
+                                <option value="Α4">Τμήμα Α4</option>
+                                <option value="Α5">Τμήμα Α5</option>
+                                <option value="Α6">Τμήμα Α6</option>
+                            </optgroup>
+                            <optgroup label="Β' Γυμνασίου">
+                                <option value="Β1">Τμήμα Β1</option>
+                                <option value="Β2">Τμήμα Β2</option>
+                                <option value="Β3">Τμήμα Β3</option>
+                                <option value="Β4">Τμήμα Β4</option>
+                                <option value="Β5">Τμήμα Β5</option>
+                                <option value="Β6">Τμήμα Β6</option>
+                                <option value="Β7">Τμήμα Β7</option>
+                            </optgroup>
+                            <optgroup label="Γ' Γυμνασίου">
+                                <option value="Γ1">Τμήμα Γ1</option>
+                                <option value="Γ2">Τμήμα Γ2</option>
+                                <option value="Γ3">Τμήμα Γ3</option>
+                                <option value="Γ4">Τμήμα Γ4</option>
+                                <option value="Γ5">Τμήμα Γ5</option>
+                                <option value="Γ6">Τμήμα Γ6</option>
+                                <option value="Γ7">Τμήμα Γ7</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-2">Φύλο</label>
+                        <select id="user-gender" class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500 font-body">
+                            <option value="Αγόρι">👦 Αγόρι</option>
+                            <option value="Κορίτσι">👧 Κορίτσι</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="pulse-btn px-10 py-4 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-bold text-xl rounded-2xl shadow-lg shadow-purple-500/30 transition transform hover:scale-105">
+                Ξεκινάμε! <i class="fa-solid fa-rocket ml-2"></i>
+            </button>
+        </div>
+
+        <!-- ΟΘΟΝΗ 2: ΕΡΩΤΗΜΑΤΟΛΟΓΙΟ / ΠΑΙΧΝΙΔΙ -->
+        <div id="screen-game" class="glass-card p-6 md:p-8 rounded-3xl w-full hidden shadow-2xl">
+            <!-- Progress Bar & Status -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center text-sm mb-2 font-body text-slate-300">
+                    <span id="progress-text">Πτυχή 1 από 7</span>
+                    <span id="score-xp" class="text-amber-400 font-bold"><i class="fa-solid fa-star"></i> 0 XP</span>
+                </div>
+                <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                    <div id="progress-bar" class="bg-gradient-to-r from-pink-500 to-indigo-500 h-full rounded-full transition-all duration-300 w-0"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="text-center py-6">
+                <div id="aspect-icon" class="text-6xl mb-4 transform hover:scale-110 transition duration-300">📚</div>
+                <h2 id="aspect-title" class="text-2xl md:text-3xl font-bold mb-3 text-white">Διδασκαλία & Μαθήματα</h2>
+                <p id="aspect-desc" class="text-slate-300 font-body max-w-lg mx-auto mb-8 text-sm md:text-base">Πόσο ικανοποιημένος/η είσαι από τον τρόπο που γίνονται τα μαθήματα και το ενδιαφέρον που παρουσιάζουν;</p>
+
+                <!-- Rating Emojis -->
+                <div class="flex justify-center items-center gap-2 md:gap-5 my-6 flex-wrap">
+                    <button onclick="selectRating(1)" class="emoji-btn flex flex-col items-center p-3 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 w-16 md:w-20">
+                        <span class="text-3xl md:text-4xl">😡</span>
+                        <span class="text-xs text-slate-400 mt-2 font-body">1 - Καθόλου</span>
+                    </button>
+                    <button onclick="selectRating(2)" class="emoji-btn flex flex-col items-center p-3 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 w-16 md:w-20">
+                        <span class="text-3xl md:text-4xl">🙁</span>
+                        <span class="text-xs text-slate-400 mt-2 font-body">2 - Λίγο</span>
+                    </button>
+                    <button onclick="selectRating(3)" class="emoji-btn flex flex-col items-center p-3 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 w-16 md:w-20">
+                        <span class="text-3xl md:text-4xl">😐</span>
+                        <span class="text-xs text-slate-400 mt-2 font-body">3 - Μέτρια</span>
+                    </button>
+                    <button onclick="selectRating(4)" class="emoji-btn flex flex-col items-center p-3 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 w-16 md:w-20">
+                        <span class="text-3xl md:text-4xl">🙂</span>
+                        <span class="text-xs text-slate-400 mt-2 font-body">4 - Πολύ</span>
+                    </button>
+                    <button onclick="selectRating(5)" class="emoji-btn flex flex-col items-center p-3 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 w-16 md:w-20">
+                        <span class="text-3xl md:text-4xl">🤩</span>
+                        <span class="text-xs text-slate-400 mt-2 font-body">5 - Πάρα πολύ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-800">
+                <button id="btn-prev" onclick="prevQuestion()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold flex items-center gap-2 invisible">
+                    <i class="fa-solid fa-arrow-left"></i> Προηγούμενο
+                </button>
+                <button id="btn-next" onclick="nextQuestion()" disabled class="px-6 py-2.5 bg-indigo-600 opacity-50 cursor-not-allowed text-white rounded-xl text-sm font-bold flex items-center gap-2">
+                    Επόμενο <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ΟΘΟΝΗ 3: ΟΛΟΚΛΗΡΩΣΗ & ΕΥΧΑΡΙΣΤΙΕΣ -->
+        <div id="screen-finish" class="glass-card p-8 md:p-12 rounded-3xl w-full text-center hidden shadow-2xl">
+            <div class="text-7xl mb-4">🎉🏆</div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-2 text-white">Μπράβο! Ολοκλήρωσες την Έρευνα!</h2>
+            <p class="text-slate-300 font-body max-w-md mx-auto mb-6">Οι απαντήσεις σου καταγράφηκαν με επιτυχία. Συγκέντρωσες <span id="final-xp" class="text-amber-400 font-bold">700 XP</span>!</p>
+
+            <div class="bg-indigo-950/60 p-6 rounded-2xl mb-8 max-w-lg mx-auto border border-indigo-800">
+                <p class="text-indigo-200 text-sm font-body">
+                    "Η συσκευή σου κλειδώθηκε επιτυχώς για να αποφευχθεί διπλή ψήφος. Ευχαριστούμε για τη συμμετοχή σου!"
+                </p>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button onclick="toggleAdminPanel()" class="px-6 py-3 bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white rounded-xl font-bold transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-chart-pie"></i> Προβολή Αποτελεσμάτων Σχολείου
+                </button>
+            </div>
+        </div>
+
+        <!-- ΟΘΟΝΗ 4: ΠΑΝΕΛ ΑΠΟΤΕΛΕΣΜΑΤΩΝ & ΣΤΑΤΙΣΤΙΚΩΝ (ADMIN / DASHBOARD) -->
+        <div id="screen-admin" class="glass-card p-6 md:p-8 rounded-3xl w-full hidden shadow-2xl my-6">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-700">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-simple text-pink-500"></i> Πάνελ Στατιστικών Ικανοποίησης
+                    </h2>
+                    <p class="text-xs text-slate-400 font-body">Αναλυτικοί μέσοι όροι ανά κατηγορία</p>
+                </div>
+                <button onclick="closeAdminPanel()" class="w-9 h-9 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Τάξη</label>
+                    <select id="filter-grade" onchange="renderAnalytics()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none font-body">
+                        <option value="ALL">Όλες οι Τάξεις</option>
+                        <option value="Α">Α' Γυμνασίου</option>
+                        <option value="Β">Β' Γυμνασίου</option>
+                        <option value="Γ">Γ' Γυμνασίου</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Τμήμα</label>
+                    <select id="filter-classroom" onchange="renderAnalytics()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none font-body">
+                        <option value="ALL">Όλα τα Τμήματα</option>
+                        <optgroup label="Α' Γυμνασίου">
+                            <option value="Α1">Τμήμα Α1</option>
+                            <option value="Α2">Τμήμα Α2</option>
+                            <option value="Α3">Τμήμα Α3</option>
+                            <option value="Α4">Τμήμα Α4</option>
+                            <option value="Α5">Τμήμα Α5</option>
+                            <option value="Α6">Τμήμα Α6</option>
+                        </optgroup>
+                        <optgroup label="Β' Γυμνασίου">
+                            <option value="Β1">Τμήμα Β1</option>
+                            <option value="Β2">Τμήμα Β2</option>
+                            <option value="Β3">Τμήμα Β3</option>
+                            <option value="Β4">Τμήμα Β4</option>
+                            <option value="Β5">Τμήμα Β5</option>
+                            <option value="Β6">Τμήμα Β6</option>
+                            <option value="Β7">Τμήμα Β7</option>
+                        </optgroup>
+                        <optgroup label="Γ' Γυμνασίου">
+                            <option value="Γ1">Τμήμα Γ1</option>
+                            <option value="Γ2">Τμήμα Γ2</option>
+                            <option value="Γ3">Τμήμα Γ3</option>
+                            <option value="Γ4">Τμήμα Γ4</option>
+                            <option value="Γ5">Τμήμα Γ5</option>
+                            <option value="Γ6">Τμήμα Γ6</option>
+                            <option value="Γ7">Τμήμα Γ7</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Φύλο</label>
+                    <select id="filter-gender" onchange="renderAnalytics()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none font-body">
+                        <option value="ALL">Όλα τα Φύλα</option>
+                        <option value="Αγόρι">👦 Αγόρια</option>
+                        <option value="Κορίτσι">👧 Κορίτσια</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- STATS OVERVIEW CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/60 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-body">Συνολικές Απαντήσεις</div>
+                        <div id="stat-total-responses" class="text-2xl font-bold text-white">0</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/60 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-body">Γενικός Μέσος Όρος</div>
+                        <div id="stat-overall-avg" class="text-2xl font-bold text-amber-400">- / 5.0</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/60 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-thumbs-up"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-body">Υψηλότερη Ικανοποίηση</div>
+                        <div id="stat-top-aspect" class="text-sm font-bold text-emerald-300 truncate max-w-[150px]">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS TABLE / RESULTS -->
+            <div class="space-y-4 mb-6" id="analytics-results-list">
+                <!-- Dynamic Content Generated Here -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap justify-between items-center gap-3 pt-4 border-t border-slate-700">
+                <button onclick="exportDataCSV()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl text-sm font-bold flex items-center gap-2 border border-emerald-500/30">
+                    <i class="fa-solid fa-file-csv"></i> Εξαγωγή σε CSV (Excel)
+                </button>
+                
+                <button onclick="clearAllData()" class="px-4 py-2 bg-red-950/40 hover:bg-red-900/60 text-red-400 rounded-xl text-sm font-bold flex items-center gap-2 border border-red-500/30">
+                    <i class="fa-solid fa-trash-can"></i> Καθαρισμός Δεδομένων
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-4 font-body">
+        SchoolQuest &copy; 2026 • Διαδραστική Έρευνα Ικανοποίησης Σχολείου
+    </footer>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // --- SOUND EFFECTS (Web Audio API) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'select') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'finish') {
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    const noteOsc = audioCtx.createOscillator();
+                    const noteGain = audioCtx.createGain();
+                    noteOsc.connect(noteGain);
+                    noteGain.connect(audioCtx.destination);
+                    noteOsc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.1);
+                    noteGain.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.1);
+                    noteGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.1 + 0.25);
+                    noteOsc.start(audioCtx.currentTime + idx * 0.1);
+                    noteOsc.stop(audioCtx.currentTime + idx * 0.1 + 0.25);
+                });
+            }
+        }
+
+        // --- QUESTIONNAIRE DATA ---
+        const ASPECTS = [
+            { id: 'teaching', title: 'Διδασκαλία & Μαθήματα', icon: '📚', desc: 'Πόσο ικανοποιημένος/η είσαι από τον τρόπο διδασκαλίας, το ενδιαφέρον των μαθημάτων και τις εργασίες;' },
+            { id: 'facilities', title: 'Σχολικές Εγκαταστάσεις', icon: '🏫', desc: 'Πώς αξιολογείς τις αίθουσες, τα εργαστήρια, τις τουαλέτες, τη θέρμανση/καθαριότητα του σχολείου;' },
+            { id: 'classmates', title: 'Σχέσεις με Συμμαθητές', icon: '🤝', desc: 'Πόσο φιλικό είναι το κλίμα μεταξύ των μαθητών; Νιώθεις αποδοχή και ομαδικότητα;' },
+            { id: 'teachers', title: 'Σχέσεις με Καθηγητές', icon: '👨‍🏫', desc: 'Πόσο κατανοητοί, δίκαιοι και υποστηρικτικοί είναι οι καθηγητές μαζί σου όταν χρειάζεσαι βοήθεια;' },
+            { id: 'sports', title: 'Δραστηριότητες & Γυμναστική', icon: '⚽', desc: 'Πόσο σου αρέσουν οι αθλητικές εγκαταστάσεις, οι εκδρομές, οι γιορτές και οι σχολικοί όμιλοι;' },
+            { id: 'canteen', title: 'Καντίνα & Διαλείμματα', icon: '🥪', desc: 'Πώς αξιολογείς την ποιότητα/τιμές της καντίνας και την άνεση κατά τη διάρκεια των διαλειμμάτων;' },
+            { id: 'safety', title: 'Ασφάλεια & Υποστήριξη', icon: '🛡️', desc: 'Νιώθεις ασφαλής στο σχολείο; Υπάρχει στήριξη αν αντιμετωπίσεις κάποιο πρόβλημα;' }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let currentQuestionIndex = 0;
+        let currentUser = { grade: 'Α', classroom: 'Α1', gender: 'Αγόρι' };
+        let currentRatings = {};
+
+        // Ελέγχουμε με τη φόρτωση αν η συσκευή έχει ήδη ψηφίσει
+        window.addEventListener('DOMContentLoaded', () => {
+            const hasVoted = localStorage.getItem('school_survey_device_voted');
+            if (hasVoted === 'true') {
+                document.getElementById('screen-welcome').classList.add('hidden');
+                document.getElementById('screen-already-played').classList.remove('hidden');
+            }
+        });
+
+        // --- GAME FLOW ---
+        function startGame() {
+            playSound('click');
+            currentUser.grade = document.getElementById('user-grade').value;
+            currentUser.classroom = document.getElementById('user-classroom').value;
+            currentUser.gender = document.getElementById('user-gender').value;
+
+            currentQuestionIndex = 0;
+            currentRatings = {};
+
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('screen-finish').classList.add('hidden');
+            document.getElementById('screen-admin').classList.add('hidden');
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const aspect = ASPECTS[currentQuestionIndex];
+            document.getElementById('aspect-icon').textContent = aspect.icon;
+            document.getElementById('aspect-title').textContent = aspect.title;
+            document.getElementById('aspect-desc').textContent = aspect.desc;
+
+            const progressPct = ((currentQuestionIndex + 1) / ASPECTS.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPct}%`;
+            document.getElementById('progress-text').textContent = `Πτυχή ${currentQuestionIndex + 1} από ${ASPECTS.length}`;
+            document.getElementById('score-xp').innerHTML = `<i class="fa-solid fa-star"></i> ${(currentQuestionIndex) * 100} XP`;
+
+            const btnList = document.querySelectorAll('.emoji-btn');
+            btnList.forEach((btn, idx) => {
+                btn.classList.remove('selected');
+                if (currentRatings[aspect.id] === idx + 1) {
+                    btn.classList.add('selected');
+                }
+            });
+
+            const btnPrev = document.getElementById('btn-prev');
+            btnPrev.style.visibility = currentQuestionIndex > 0 ? 'visible' : 'hidden';
+
+            const btnNext = document.getElementById('btn-next');
+            if (currentRatings[aspect.id]) {
+                btnNext.disabled = false;
+                btnNext.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnNext.disabled = true;
+                btnNext.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (currentQuestionIndex === ASPECTS.length - 1) {
+                btnNext.innerHTML = 'Ολοκλήρωση <i class="fa-solid fa-check ml-1"></i>';
+            } else {
+                btnNext.innerHTML = 'Επόμενο <i class="fa-solid fa-arrow-right ml-1"></i>';
+            }
+        }
+
+        function selectRating(val) {
+            playSound('select');
+            const aspect = ASPECTS[currentQuestionIndex];
+            currentRatings[aspect.id] = val;
+
+            const btnList = document.querySelectorAll('.emoji-btn');
+            btnList.forEach((btn, idx) => {
+                if (idx + 1 === val) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+
+            const btnNext = document.getElementById('btn-next');
+            btnNext.disabled = false;
+            btnNext.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            if (currentQuestionIndex < ASPECTS.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                finishSurvey();
+            }
+        }
+
+        function prevQuestion() {
+            playSound('click');
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function finishSurvey() {
+            playSound('finish');
+            saveSurveyResponse();
+
+            // Κλειδώνουμε τη συσκευή ώστε να μην μπορεί να ξαναπαιχτεί
+            localStorage.setItem('school_survey_device_voted', 'true');
+
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-finish').classList.remove('hidden');
+            document.getElementById('final-xp').textContent = `${ASPECTS.length * 100} XP`;
+        }
+
+        // --- LOCAL STORAGE DATA ---
+        function saveSurveyResponse() {
+            const allData = JSON.parse(localStorage.getItem('school_survey_db') || '[]');
+            const record = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                user: { ...currentUser },
+                ratings: { ...currentRatings }
+            };
+            allData.push(record);
+            localStorage.setItem('school_survey_db', JSON.stringify(allData));
+        }
+
+        function loadStoredData() {
+            return JSON.parse(localStorage.getItem('school_survey_db') || '[]');
+        }
+
+        // --- ADMIN ANALYTICS ---
+        function toggleAdminPanel() {
+            playSound('click');
+            const adminScreen = document.getElementById('screen-admin');
+            if (adminScreen.classList.contains('hidden')) {
+                document.getElementById('screen-welcome').classList.add('hidden');
+                document.getElementById('screen-game').classList.add('hidden');
+                document.getElementById('screen-finish').classList.add('hidden');
+                document.getElementById('screen-already-played').classList.add('hidden');
+                adminScreen.classList.remove('hidden');
+                renderAnalytics();
+            } else {
+                closeAdminPanel();
+            }
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('screen-admin').classList.add('hidden');
+            const hasVoted = localStorage.getItem('school_survey_device_voted');
+            if (hasVoted === 'true') {
+                document.getElementById('screen-already-played').classList.remove('hidden');
+            } else {
+                document.getElementById('screen-welcome').classList.remove('hidden');
+            }
+        }
+
+        function renderAnalytics() {
+            const data = loadStoredData();
+            const filterGrade = document.getElementById('filter-grade').value;
+            const filterClassroom = document.getElementById('filter-classroom').value;
+            const filterGender = document.getElementById('filter-gender').value;
+
+            const filtered = data.filter(item => {
+                if (filterGrade !== 'ALL' && item.user.grade !== filterGrade) return false;
+                if (filterClassroom !== 'ALL' && item.user.classroom !== filterClassroom) return false;
+                if (filterGender !== 'ALL' && item.user.gender !== filterGender) return false;
+                return true;
+            });
+
+            document.getElementById('stat-total-responses').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                document.getElementById('stat-overall-avg').textContent = "- / 5.0";
+                document.getElementById('stat-top-aspect').textContent = "Καμία εγγραφή";
+                document.getElementById('analytics-results-list').innerHTML = `
+                    <div class="text-center py-8 text-slate-400 font-body">
+                        <i class="fa-solid fa-inbox text-4xl mb-2 block"></i>
+                        Δεν βρέθηκαν καταχωρημένες απαντήσεις για τα επιλεγμένα φίλτρα.
+                    </div>
+                `;
+                return;
+            }
+
+            const aspectTotals = {};
+            ASPECTS.forEach(a => aspectTotals[a.id] = { sum: 0, count: 0 });
+
+            filtered.forEach(item => {
+                Object.keys(item.ratings).forEach(aspectId => {
+                    if (aspectTotals[aspectId]) {
+                        aspectTotals[aspectId].sum += item.ratings[aspectId];
+                        aspectTotals[aspectId].count += 1;
+                    }
+                });
+            });
+
+            let grandTotal = 0;
+            let grandCount = 0;
+            let topAspectTitle = '-';
+            let maxAvg = -1;
+
+            const listContainer = document.getElementById('analytics-results-list');
+            listContainer.innerHTML = '';
+
+            ASPECTS.forEach(aspect => {
+                const stat = aspectTotals[aspect.id];
+                const avg = stat.count > 0 ? (stat.sum / stat.count) : 0;
+                grandTotal += stat.sum;
+                grandCount += stat.count;
+
+                if (avg > maxAvg) {
+                    maxAvg = avg;
+                    topAspectTitle = aspect.title;
+                }
+
+                let colorClass = 'bg-emerald-500';
+                let textClass = 'text-emerald-400';
+                if (avg < 2.5) {
+                    colorClass = 'bg-red-500';
+                    textClass = 'text-red-400';
+                } else if (avg < 3.8) {
+                    colorClass = 'bg-amber-500';
+                    textClass = 'text-amber-400';
+                }
+
+                const cardHtml = `
+                    <div class="bg-slate-800/70 p-4 rounded-2xl border border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 md:w-1/3">
+                            <span class="text-2xl">${aspect.icon}</span>
+                            <div>
+                                <h4 class="font-bold text-white text-sm md:text-base">${aspect.title}</h4>
+                                <span class="text-xs text-slate-400 font-body">${stat.count} απαντήσεις</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 w-full">
+                            <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden p-0.5 border border-slate-700/80">
+                                <div class="${colorClass} h-full rounded-full transition-all duration-500" style="width: ${(avg / 5) * 100}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-right md:w-24">
+                            <span class="text-xl font-bold ${textClass}">${avg.toFixed(2)}</span>
+                            <span class="text-xs text-slate-500"> / 5.0</span>
+                        </div>
+                    </div>
+                `;
+                listContainer.innerHTML += cardHtml;
+            });
+
+            const overallAvg = grandCount > 0 ? (grandTotal / grandCount) : 0;
+            document.getElementById('stat-overall-avg').textContent = `${overallAvg.toFixed(2)} / 5.0`;
+            document.getElementById('stat-top-aspect').textContent = topAspectTitle;
+        }
+
+        function exportDataCSV() {
+            const data = loadStoredData();
+            if (data.length === 0) {
+                alert('Δεν υπάρχουν δεδομένα για εξαγωγή!');
+                return;
+            }
+
+            let csv = 'ID,Ημερομηνία,Τάξη,Τμήμα,Φύλο,' + ASPECTS.map(a => `"${a.title}"`).join(',') + '\n';
+
+            data.forEach(item => {
+                let row = [
+                    item.id,
+                    `"${new Date(item.timestamp).toLocaleString('el-GR')}"`,
+                    `"${item.user.grade}"`,
+                    `"${item.user.classroom}"`,
+                    `"${item.user.gender}"`
+                ];
+                ASPECTS.forEach(a => {
+                    row.push(item.ratings[a.id] || '');
+                });
+                csv += row.join(',') + '\n';
+            });
+
+            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `school_satisfaction_survey_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+        }
+
+        function clearAllData() {
+            if (confirm('Είστε σίγουροι ότι θέλετε να διαγράψετε ΟΛΑ τα αποθηκευμένα δεδομένα και να ξεκλειδώσετε τις συσκευές;')) {
+                localStorage.removeItem('school_survey_db');
+                localStorage.removeItem('school_survey_device_voted');
+                renderAnalytics();
+                alert('Τα δεδομένα διαγράφηκαν και οι συσκευές ξεκλειδώθηκαν.');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
